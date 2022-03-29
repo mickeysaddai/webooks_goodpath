@@ -3,12 +3,20 @@ const bcrypt = require("bcryptjs");
 const keys = require('../config/keys');
 const jwt = require('jsonwebtoken');
 
+const validateRegisterInput = require('../validation/register');
+const validateLoginInput = require('../validation/login');
+
 const sampleUsersController = async(req, res) => {
     res.send("These are my users here")
 }
 
 
 const registerUsersController = (req, res) => {
+     const { errors, isValid } = validateRegisterInput(req.body);
+     
+     if (!isValid) {
+         return res.status(400).json(errors);
+        }
         User.findOne({email: req.body.email})
         .then(user => {
 
@@ -36,6 +44,11 @@ const registerUsersController = (req, res) => {
 
 
 const loginUsersController = (req, res) => {
+    const { errors, isValid } = validateLoginInput(req.body);
+    if (!isValid) {
+    return res.status(400).json(errors);
+    }
+
     const email = req.body.email;
     const password = req.body.password;
 
