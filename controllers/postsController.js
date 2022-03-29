@@ -1,8 +1,6 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const passport = require('passport');
 
 const Post = require('../models/Post');
+const passport = require('passport');
 const validatePostInput = require('../validation/posts')
 
 const allPostsController = (req, res) => {
@@ -30,7 +28,7 @@ const singlePostController = (req, res) => {
         );
 };
 
-const authenticatePostController = passport.authenticate('jwt', { session: false }),
+const authenticatePostController = (passport.authenticate('jwt', { session: false }),
     (req, res) => {
       const { errors, isValid } = validatePostInput(req.body);
   
@@ -44,7 +42,7 @@ const authenticatePostController = passport.authenticate('jwt', { session: false
       });
   
       newPost.save().then(post => res.json(post));
-    }
+    })
   
 
 module.exports = {

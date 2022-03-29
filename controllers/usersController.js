@@ -3,8 +3,8 @@ const bcrypt = require("bcryptjs");
 const keys = require('../config/keys');
 const jwt = require('jsonwebtoken');
 
-const validateRegisterInput = require('../validation/register');
-const validateLoginInput = require('../validation/login');
+// const validateRegisterInput = require('../validation/register');
+// const validateLoginInput = require('../validation/login');
 
 const sampleUsersController = async(req, res) => {
     res.send("These are my users here")
@@ -12,11 +12,13 @@ const sampleUsersController = async(req, res) => {
 
 
 const registerUsersController = (req, res) => {
-     const { errors, isValid } = validateRegisterInput(req.body);
+    
+    console.log("REQ",req.body)
+    //  const { errors, isValid } = validateRegisterInput(req.body);
      
-     if (!isValid) {
-         return res.status(400).json(errors);
-        }
+    //  if (!isValid) {
+    //      return res.status(400).json(errors);
+    //     }
         User.findOne({email: req.body.email})
         .then(user => {
 
@@ -28,8 +30,10 @@ const registerUsersController = (req, res) => {
                     email: req.body.email,
                     password: req.body.password
                 })
+
                 bcrypt.genSalt(10, (err, salt) => {
                     bcrypt.hash(newUser.password, salt, (err, hash) => {
+                        console.log(newUser.password)
                         if(err) throw err;
                         newUser.password = hash
                         newUser.save()
@@ -85,9 +89,9 @@ const loginUsersController = (req, res) => {
         
         })
 }
+
 module.exports = {
     sampleUsersController,
     registerUsersController,
     loginUsersController
-
 }
