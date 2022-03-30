@@ -1,11 +1,9 @@
-const express = require('express');
-const mongoose = require('mongoose');
 const passport = require('passport');
 
 const Post = require('../models/Post');
 const validatePostInput = require('../validation/posts')
 
-const allPostsController = (req, res) => {
+const getAllPostsController = (req, res) => {
     Post.find()
         .sort({ date: -1 })
         .then(posts => res.json(posts))
@@ -13,7 +11,7 @@ const allPostsController = (req, res) => {
 };
 
 
-const userPostsController = (req, res) => {
+const getUserPostsController = (req, res) => {
     Post.find({user: req.params.user_id})
         .then(posts => res.json(posts))
         .catch(err =>
@@ -22,7 +20,7 @@ const userPostsController = (req, res) => {
     );
 }
 
-const singlePostController = (req, res) => {
+const getSinglePostController = (req, res) => {
     Post.findById(req.params.id)
         .then(post => res.json(post))
         .catch(err =>
@@ -30,28 +28,51 @@ const singlePostController = (req, res) => {
         );
 };
 
+
+
 const authenticatePostController = (passport.authenticate('jwt', { session: false }),
     (req, res) => {
       const { errors, isValid } = validatePostInput(req.body);
-  
+        
       if (!isValid) {
         return res.status(400).json(errors);
       }
   
       const newPost = new Post({
         text: req.body.text,
-        user: req.user.id
+        // user: req.user.id
       });
   
       newPost.save().then(post => res.json(post));
+      
     }
-)
+  );
+
   
+  const putSinglePostController = (req, res) => {
+       Post.findByIdAndUpdate(req.params.id, req.body)
+       .then(event => res.json(event))
+       .catch(err => res.json(err))
+  
+  };
+
+
+const deleteSinglePostController = (req, res) => {
+    
+    const {id} = req.params
+    Post.findOneAndDelete({_id: id})
+        .then(() => res.status(200).json({sucess: "Post successfully deleted"}))
+        .catch(err => {res.json(err)})
+};
+
+
 
 module.exports = {
-    allPostsController,
-    singlePostController,
-    userPostsController,
-    authenticatePostController
+    getAllPostsController,
+    getSinglePostController,
+    getUserPostsController,
+    authenticatePostController,
+    putSinglePostController,
+    deleteSinglePostController
 
 }
