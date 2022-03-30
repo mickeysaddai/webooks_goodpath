@@ -9,8 +9,10 @@ const sampleHookController = async(request, response) => {
     //         value: request.body
     //     }
     // });
-    const content = request.body.message
-    const avatarUrl = request.body.avatar
+    // const content = request.body.message
+    console.log()
+    const content = "a user logged in"
+    // const avatarUrl = request.body.avatar
     try {
          const discordUrl = process.env.DISCORD_URL
          const discordHook = await axios.post('https://discord.com/api/webhooks/957842910328533083/3jtjIPCr-MtArCPXLZCiiNzi05WOuujRBhRDljjTOmTGYQ0KQjUqN-kANVdO2zbgLina', {
@@ -30,8 +32,16 @@ const sampleHookController = async(request, response) => {
     response.status(200).send("received")
 }
 
+const registerUsersController = async(request, response) => {
+    //  const { errors, isValid } = validateRegisterInput(req.body);
+    console.log("my req in hooks", request.body)
+    response.send("received")
+    
+}
+
 
 
 module.exports = {
-    sampleHookController
+    sampleHookController,
+    registerUsersController
 }
