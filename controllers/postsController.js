@@ -1,7 +1,7 @@
 const passport = require('passport');
-
 const Post = require('../models/Post');
-const validatePostInput = require('../validation/posts')
+const validatePostInput = require('../validation/posts');
+const discordService = require('../services/discordService')
 
 const getAllPostsController = (req, res) => {
     Post.find()
@@ -31,7 +31,7 @@ const getSinglePostController = (req, res) => {
 
 
 const authenticatePostController = (passport.authenticate('jwt', { session: false }),
-    (req, res) => {
+    async (req, res) => {
       const { errors, isValid } = validatePostInput(req.body);
         
       if (!isValid) {
@@ -44,14 +44,36 @@ const authenticatePostController = (passport.authenticate('jwt', { session: fals
       });
   
       newPost.save().then(post => res.json(post));
-      
+
+       const discordPayload = {
+                   message: `New post notification: "${newPost.text}"`,
+                   avatarUrl: "No avatar"
+               }
+               try {
+                   await discordService.discordPostService(discordPayload)
+
+               } catch(err) {
+                   console.log("Discord error",err)
+               }  
     }
   );
 
   
   const putSinglePostController = (req, res) => {
        Post.findByIdAndUpdate(req.params.id, req.body)
-       .then(event => res.json(event))
+       .then(async post => {
+           res.json(post)
+           const discordPayload = {
+                   message: `Updated post notification: "${post.text}"`,
+                   avatarUrl: "No avatar"
+               }
+               try {
+                   await discordService.discordPostService(discordPayload)
+
+               } catch(err) {
+                   console.log("Discord error",err)
+               }  
+        })
        .catch(err => res.json(err))
   
   };
@@ -61,7 +83,20 @@ const deleteSinglePostController = (req, res) => {
     
     const {id} = req.params
     Post.findOneAndDelete({_id: id})
-        .then(() => res.status(200).json({sucess: "Post successfully deleted"}))
+        .then(async() => {
+            res.status(200).json({sucess: "Post successfully deleted"})
+
+            const discordPayload = {
+                   message: 'A post was deleted',
+                   avatarUrl: "No avatar"
+               }
+               try {
+                   await discordService.discordPostService(discordPayload)
+
+               } catch(err) {
+                   console.log("Discord error",err)
+               }  
+        })
         .catch(err => {res.json(err)})
 };
 

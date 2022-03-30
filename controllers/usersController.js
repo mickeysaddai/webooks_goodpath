@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const keys = require('../config/keys');
 const jwt = require('jsonwebtoken');
 const discordService = require('../services/discordService')
-const passport = require('passport');
+
 
 
 const validateRegisterInput = require('../validation/register');
