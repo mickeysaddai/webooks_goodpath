@@ -32,16 +32,54 @@ const sampleHookController = async(request, response) => {
     response.status(200).send("received")
 }
 
-const registerUsersController = async(request, response) => {
+const verifyHook = async(hookUrl, hookSecret) => {
+  try {
+    const buildHeader = () => {
+      if (hookSecret) {
+        return {
+       headers: {
+      'Authorization': `token ${hookSecret}`
+      }
+    }
+      } else {
+        return {}
+      }
+    }
+    const header = buildHeader()
+    
+    const verifyRequest = await axios.get(hookUrl, header)
+    
+    console.log("verified!",verifyRequest);
+    return true
+  } catch (err) {
+    console.log("Error verifying hook", err)
+    return false
+  }
+}
+
+const registerHooksController = async(request, response) => {
     //  const { errors, isValid } = validateRegisterInput(req.body);
-    console.log("my req in hooks", request.body)
+    const hookPayload = request.body;
+    const { url, secretToken } = hookPayload;
+    const isVerifiedHook = await verifyHook(url, secretToken)
+    if (isVerifiedHook) {
+      // store in db & send successful response with message hook verified
+    } else {
+      // reject request with status 400, or something similar 
+    }
+
     response.send("received")
     
+}
+
+const getHooksController = async(request, response) => {
+  // Get userId from request body
+  // look up Mongo for hooks for this user and return an array of hook objects 
 }
 
 
 
 module.exports = {
     sampleHookController,
-    registerUsersController
+   registerHooksController
 }
