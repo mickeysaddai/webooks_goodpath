@@ -29,35 +29,6 @@ const getSinglePostController = (req, res) => {
 };
 
 
-
-const authenticatePostController = (passport.authenticate('jwt', { session: false }),
-    async (req, res) => {
-      const { errors, isValid } = validatePostInput(req.body);
-        
-      if (!isValid) {
-        return res.status(400).json(errors);
-      }
-  
-      const newPost = new Post({
-        text: req.body.text,
-        // user: req.user.id
-      });
-  
-      newPost.save().then(post => res.json(post));
-
-       const discordPayload = {
-                   message: `New post notification: "${newPost.text}"`,
-                   avatarUrl: "No avatar"
-               }
-               try {
-                   await discordService.discordPostService(discordPayload)
-
-               } catch(err) {
-                   console.log("Discord error",err)
-               }  
-    }
-  );
-
   
   const putSinglePostController = (req, res) => {
        Post.findByIdAndUpdate(req.params.id, req.body)
@@ -106,7 +77,7 @@ module.exports = {
     getAllPostsController,
     getSinglePostController,
     getUserPostsController,
-    authenticatePostController,
+    // authenticatePostController,
     putSinglePostController,
     deleteSinglePostController
 

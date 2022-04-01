@@ -7,7 +7,8 @@ const cors = require('cors');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const hooksRouter = require('./routes/hooks');
-const postsRouter = require('./routes/posts')
+const postsRouter = require('./routes/posts');
+const passport = require('passport');
 
 const mongoose = require("mongoose");
 const db = require('./config/keys').mongoURI;
@@ -18,12 +19,10 @@ mongoose
 .catch((err) => console.log(err))
 
 app.use(cors());
+app.use(passport.initialize());
 
+require('./config/passport')(passport);
 
-// LOGGER.level = 'debug';
-const port = 3007;
-
-console.log(process.env.REDIS_HOST);
 
 app.use(bodyParser.json({ limit: '50mb' }));
 

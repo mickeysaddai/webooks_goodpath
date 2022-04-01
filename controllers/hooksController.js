@@ -1,85 +1,72 @@
-const axios = require('axios')
+const axios = require('axios');
+const passport = require('passport');
+const Hook = require('../models/Hook')
 
 
-const sampleHookController = async(request, response) => {
-    console.log(request.body)
-    
-    // const secondServerRequest = await axios.post('http://localhost:3009/api/v1/samplePOST', {
-    //     data: {
-    //         value: request.body
-    //     }
-    // });
-    // const content = request.body.message
-    console.log()
-    const content = "a user logged in"
-    // const avatarUrl = request.body.avatar
-    try {
-         const discordUrl = process.env.DISCORD_URL
-         const discordHook = await axios.post('https://discord.com/api/webhooks/957842910328533083/3jtjIPCr-MtArCPXLZCiiNzi05WOuujRBhRDljjTOmTGYQ0KQjUqN-kANVdO2zbgLina', {
-        content: content,
-      embeds: [
-        {
-          image: {
-            url: avatarUrl,
-          },
-        },
-      ],
-    })
-    } catch(err) {
-        console.log(err)
-    }
-   
-    response.status(200).send("received")
+const getAllHooksController = async(req, res) => {
+  Hook.find()
+        .then(hooks => res.json(hooks))
+        .catch(err => res.status(404).json({ nohooksfound: 'No hooks found' }));
 }
 
-const verifyHook = async(hookUrl, hookSecret) => {
-  try {
-    const buildHeader = () => {
-      if (hookSecret) {
-        return {
-       headers: {
-      'Authorization': `token ${hookSecret}`
-      }
-    }
-      } else {
-        return {}
-      }
-    }
-    const header = buildHeader()
-    
-    const verifyRequest = await axios.get(hookUrl, header)
-    
-    console.log("verified!",verifyRequest);
-    return true
-  } catch (err) {
-    console.log("Error verifying hook", err)
-    return false
-  }
-}
+const getUserHooksController = (req, res) => {
+    Hook.find({user: req.params.user_id})
+        .then(hooks => res.json(hooks))
+        .catch(err =>
+            res.status(404).json({ nohooksfound: 'No hooks found' }
+        )
+    );
+};
 
-const registerHooksController = async(request, response) => {
-    //  const { errors, isValid } = validateRegisterInput(req.body);
-    const hookPayload = request.body;
-    const { url, secretToken } = hookPayload;
-    const isVerifiedHook = await verifyHook(url, secretToken)
-    if (isVerifiedHook) {
-      // store in db & send successful response with message hook verified
-    } else {
-      // reject request with status 400, or something similar 
-    }
+const putSingleHookController = (req, res) => {
+       Hook.findByIdAndUpdate(req.params.id, req.body)
+       .then(async hook => {
+           res.json(hook)
+           const discordPayload = {
+                   message: `Updated hook notification: "${hook.url}"`,
+                   avatarUrl: "No avatar"
+               }
+               try {
+                   await discordService.discordPostService(discordPayload)
 
-    response.send("received")
+               } catch(err) {
+                   console.log("Discord error",err)
+               }  
+        })
+       .catch(err => res.json(err))
+  
+  };
+
+
+const deleteSingleHookController = (req, res) => {
     
-}
+    const {id} = req.params;
+    Hook.findOneAndDelete({_id: id})
+        .then(async() => {
+            res.status(200).json({sucess: "Hook successfully deleted"})
 
-const getHooksController = async(request, response) => {
-  // Get userId from request body
-  // look up Mongo for hooks for this user and return an array of hook objects 
-}
+            const discordPayload = {
+                   message: 'A hook was deleted',
+                   avatarUrl: "No avatar"
+               }
+               try {
+                   await discordService.discordPostService(discordPayload)
+
+               } catch(err) {
+                   console.log("Discord error",err)
+               }  
+        })
+        .catch(err => {res.json(err)})
+};
+
 
 
 
 module.exports = {
-    sampleHookController,
-   registerHooksController
+   getAllHooksController,
+  //  registerHooksController,
+  getUserHooksController,
+  deleteSingleHookController,
+  putSingleHookController
+
 }

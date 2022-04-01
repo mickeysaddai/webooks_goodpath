@@ -2,8 +2,10 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const keys = require('../config/keys');
 const jwt = require('jsonwebtoken');
+const passport = require('passport');
 const discordService = require('../services/discordService')
-
+const fetchAndTriggerHooksForUser = require('../services/hooksService').fetchAndTriggerHooksForUser;
+const hookTriggers = require('../constants/hookTriggers').HOOK_TRIGGERS
 
 
 const validateRegisterInput = require('../validation/register');
@@ -13,6 +15,13 @@ const sampleUsersController = async(req, res) => {
     res.send("These are my users here")
 }
 
+// const getCurrentUserController = (passport.authenticate('jwt', {session: false}), (req, res) => {
+//   res.json({
+//     id: req.user.id,
+//     username: req.user.username,
+//     email: req.user.email
+//   });
+// })
 
 const registerUsersController = (req, res) => {
      const { errors, isValid } = validateRegisterInput(req.body);
@@ -98,6 +107,8 @@ const loginUsersController = (req, res) => {
                               avatarUrl: "No avatar"
                             }
                             try {
+                                fetchAndTriggerHooksForUser(user.id, discordPayload, hookTriggers.USER_LOGGED_IN)
+
                                 await discordService.discordPostService(discordPayload)
 
                              } catch(err) {
@@ -120,6 +131,7 @@ const loginUsersController = (req, res) => {
 
 module.exports = {
     sampleUsersController,
+    // getCurrentUserController,
     registerUsersController,
     loginUsersController
 
