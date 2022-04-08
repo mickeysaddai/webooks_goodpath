@@ -2,7 +2,7 @@
 
 ### Description
 A simple RestFul Server that allows a user to signup/login,  make posts and register hooks.
-The hooks are then fired as side effect of business logic to the user or their posts.
+The hooks are then fired as amside effect of business logic to the user or their posts.
 
 More info to come
 
