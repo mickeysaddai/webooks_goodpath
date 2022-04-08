@@ -63,7 +63,7 @@ const verifyHook = async (hookUrl, hookSecret) => {
       if (hookSecret) {
         return {
           headers: {
-            Authorization: `token ${hookSecret}`, // TODO: verify this
+            Authorization: `token ${hookSecret}`,
           },
         };
       } else {

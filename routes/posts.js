@@ -11,7 +11,6 @@ const hookTriggers = require("../constants/hookTriggers").HOOK_TRIGGERS;
 router.get("/", postsController.getAllPostsController);
 router.get("/user/:user_id", postsController.getUserPostsController);
 router.get("/:id", postsController.getSinglePostController);
-// router.post('/',postsController.authenticatePostController)
 router.delete("/:id", postsController.deleteSinglePostController);
 router.put("/:id", postsController.putSinglePostController);
 

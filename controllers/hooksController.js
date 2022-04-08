@@ -53,7 +53,6 @@ const deleteSingleHookController = (req, res) => {
 
 module.exports = {
   getAllHooksController,
-  //  registerHooksController,
   getUserHooksController,
   deleteSingleHookController,
   putSingleHookController,
