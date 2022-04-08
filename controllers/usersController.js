@@ -19,14 +19,6 @@ const getAllUsersController = async (req, res) => {
     .catch((err) => res.status(500).send(err));
 };
 
-// const getCurrentUserController = (passport.authenticate('jwt', {session: false}), (req, res) => {
-//   res.json({
-//     id: req.user.id,
-//     username: req.user.username,
-//     email: req.user.email
-//   });
-// })
-
 const registerUsersController = (req, res) => {
   const { errors, isValid } = validateRegisterInput(req.body);
 

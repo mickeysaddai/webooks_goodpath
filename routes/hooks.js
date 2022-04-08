@@ -7,7 +7,6 @@ const hooksController = require("../controllers/hooksController");
 const { HOOK_TRIGGER_KEYS } = require("../constants/hookTriggers");
 
 router.get("/", hooksController.getAllHooksController);
-// router.post('/registerHook', hooksController.registerHooksController )
 router.get("/user/:user_id", hooksController.getUserHooksController);
 router.delete("/:id", hooksController.deleteSingleHookController);
 router.put("/:id", hooksController.putSingleHookController);
@@ -18,7 +17,7 @@ const verifyHook = async (hookUrl, hookSecret) => {
       if (hookSecret) {
         return {
           headers: {
-            Authorization: `token ${hookSecret}`, // TODO: verify this
+            Authorization: `token ${hookSecret}`,
           },
         };
       } else {

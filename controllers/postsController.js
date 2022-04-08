@@ -78,7 +78,6 @@ module.exports = {
   getAllPostsController,
   getSinglePostController,
   getUserPostsController,
-  // authenticatePostController,
   putSinglePostController,
   deleteSinglePostController,
 };
