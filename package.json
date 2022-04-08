@@ -5,7 +5,10 @@
   "scripts": {
     "start": "node ./bin/www",
     "devStart": "nodemon ./bin/wwws",
-    "debug": "nodemon --inspect ./bin/wws"
+    "debug": "nodemon --inspect ./bin/wws",
+    "prepare": "husky install",
+    "test": "echo \"Error: no test specified\"",
+    "lint": "eslint . --fix"
   },
   "dependencies": {
     "axios": "^0.26.1",
@@ -23,6 +26,27 @@
     "morgan": "~1.9.1",
     "nodemon": "^2.0.15",
     "passport": "^0.5.2",
+    "passport-jwt": "^4.0.0",
     "validator": "^13.7.0"
+  },
+  "devDependencies": {
+     "eslint": "^7.29.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "husky": "^6.0.0",
+    "lint-staged": "^11.0.0",
+    "prettier": "^2.3.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.js": [
+      "eslint --fix",
+      "git add"
+    ]
   }
 }
